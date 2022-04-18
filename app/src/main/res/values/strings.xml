@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Demo</string>
+    <string name="text_app_search_hint">Search…</string>
+    <string name="app_recommend_title">Recommend</string>
+    <string name="search_empty_text">not found</string>
+    <string name="search_history_text">Recent search</string>
+    <string name="search_history_clear_text">Clear all</string>
+</resources>

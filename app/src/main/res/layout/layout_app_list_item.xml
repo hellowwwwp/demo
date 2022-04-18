@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/app_rank_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:singleLine="true"
+        android:textColor="@color/second_text_color"
+        android:textSize="14sp"
+        tools:text="1" />
+
+    <ImageView
+        android:id="@+id/icon_iv"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toEndOf="@+id/app_rank_tv"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/app_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/icon_iv"
+        android:layout_marginEnd="16dp"
+        android:layout_toEndOf="@+id/icon_iv"
+        android:singleLine="true"
+        android:textColor="@color/main_text_color"
+        android:textSize="13sp"
+        tools:text="圣斗士星矢" />
+
+    <TextView
+        android:id="@+id/app_type_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:layout_toEndOf="@+id/icon_iv"
+        android:singleLine="true"
+        android:textColor="@color/second_text_color"
+        android:textSize="12sp"
+        tools:text="游戏" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/icon_iv"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:layout_toEndOf="@+id/icon_iv"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.example.demo.widgets.SimpleRatingBar
+            android:id="@+id/rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:srb_star_size="12dp" />
+
+        <TextView
+            android:id="@+id/rating_count_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="@color/second_text_color"
+            android:textSize="12sp"
+            tools:text="(144)" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:background="@color/divider_color" />
+
+</RelativeLayout>
