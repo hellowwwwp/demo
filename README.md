@@ -1,5 +1,8 @@
 ## Demo 运行说明
 
+#### 安装说明
+1. [点我下载](apk/app-debug.apk)安装包
+
 #### 项目说明
 1. 整个项目采用 MVVM 架构
 2. 接口请求库使用 Retrofit + OkHttp + 协程
