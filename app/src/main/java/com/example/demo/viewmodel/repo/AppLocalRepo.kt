@@ -5,11 +5,12 @@ import com.example.demo.DemoApplication
 import com.example.demo.database.app.AppItemDao
 import com.example.demo.database.app.AppListItemBean
 import com.example.demo.database.app.AppRecommendListItemBean
+import com.example.demo.utils.launchByCatch
+import com.example.demo.utils.withContextOrNull
 import com.example.demo.viewmodel.mapper.AppDataMapper
 import com.example.demo.viewmodel.model.app.AppItemData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.withContext
 
 /**
  * @author: wangpan
@@ -23,19 +24,19 @@ class AppLocalRepo {
     }
 
     suspend fun getAllAppListItems(): List<AppListItemBean>? {
-        return withContext(Dispatchers.IO) {
+        return withContextOrNull(Dispatchers.IO) {
             appItemDao.getAllAppListItems()
         }
     }
 
     suspend fun deleteAllAppListItems() = supervisorScope {
-        withContext(Dispatchers.IO) {
+        launchByCatch(Dispatchers.IO) {
             appItemDao.deleteAllAppListItems()
         }
     }
 
     suspend fun insertAppListItems(items: List<AppItemData>?) = supervisorScope {
-        withContext(Dispatchers.IO) {
+        launchByCatch(Dispatchers.IO) {
             val beanList = AppDataMapper.appItemData2AppListItemBean(items)
             if (!beanList.isNullOrEmpty()) {
                 appItemDao.insertAppListItems(beanList)
@@ -44,19 +45,19 @@ class AppLocalRepo {
     }
 
     suspend fun getAllAppRecommendListItems(): List<AppRecommendListItemBean>? {
-        return withContext(Dispatchers.IO) {
+        return withContextOrNull(Dispatchers.IO) {
             appItemDao.getAllAppRecommendListItems()
         }
     }
 
     suspend fun deleteAllAppRecommendListItems() = supervisorScope {
-        withContext(Dispatchers.IO) {
+        launchByCatch(Dispatchers.IO) {
             appItemDao.deleteAllAppRecommendListItems()
         }
     }
 
     suspend fun insertAppRecommendListItems(items: List<AppItemData>?) = supervisorScope {
-        withContext(Dispatchers.IO) {
+        launchByCatch(Dispatchers.IO) {
             val beanList = AppDataMapper.appItemData2AppRecommendListItemBean(items)
             if (!beanList.isNullOrEmpty()) {
                 appItemDao.insertAppRecommendListItems(beanList)
