@@ -1,7 +1,5 @@
 package com.example.demo.utils
 
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +22,7 @@ class LoadMoreAdapter(
     private val loadMoreWrapper = PreloadWrapper(preloadDistance).apply {
         onArrivedPreloadPosition = {
             //预加载
-            doLoadMore()
+            doLoadMoreIfNeed()
         }
 
         onRecyclerViewDetachedFromWindow = {
@@ -33,15 +31,26 @@ class LoadMoreAdapter(
         }
     }
 
-    private val handler = Handler(Looper.getMainLooper())
+    private var recyclerView: RecyclerView? = null
 
-    private var notifyFinishLoadMore: Runnable? = null
+    private var addLoadMoreRunnable: Runnable? = null
+
+    private var removeLoadMoreRunnable: Runnable? = null
 
     private var isLoading: Boolean = false
 
     private object LoadMoreEntity
 
-    private val dataList = ArrayList<LoadMoreEntity>(1)
+    private val dataList: MutableList<LoadMoreEntity> = mutableListOf()
+
+    var hasMore: Boolean = false
+        private set
+
+    var isLoadMoreEnabled: Boolean = false
+        set(value) {
+            field = value
+            finishLoadMore(value)
+        }
 
     /**
      * loadMore 回调
@@ -49,7 +58,12 @@ class LoadMoreAdapter(
     var onLoadMore: (() -> Unit)? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = recyclerView
         loadMoreWrapper.attachToRecyclerView(recyclerView)
+    }
+
+    override fun getItemCount(): Int {
+        return dataList.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LoadMoreViewHolder {
@@ -59,58 +73,65 @@ class LoadMoreAdapter(
     }
 
     override fun onBindViewHolder(holder: LoadMoreViewHolder, position: Int) {
-        doLoadMore()
+        //no op
     }
 
     override fun onViewAttachedToWindow(holder: LoadMoreViewHolder) {
-        doLoadMore()
+        doLoadMoreIfNeed()
     }
 
-    override fun getItemCount(): Int {
-        return dataList.size
-    }
-
-    fun setLoadMoreEnabled(isEnabled: Boolean) {
-        finishLoadMore(isEnabled, 0)
-    }
-
-    fun hasMore(): Boolean {
-        return dataList.isNotEmpty()
-    }
-
-    @JvmOverloads
-    fun finishLoadMore(hasMore: Boolean, delayTime: Long = 100) {
-        removePendingRunnable()
-        //如果没有更多了就立即关闭 loadMore
-        if (!hasMore && dataList.isNotEmpty()) {
-            dataList.removeAt(0)
-            notifyItemRemoved(0)
+    private fun doLoadMoreIfNeed() {
+        if (dataList.isNotEmpty() && !isLoading) {
+            isLoading = true
+            onLoadMore?.invoke()
         }
-        notifyFinishLoadMore = Runnable {
-            //延迟更新 loading 状态为 false, 避免短时间内多次 loadMore
-            isLoading = false
-            //延迟通知列表开启 loadMore, 避免短时间内多次 loadMore
+    }
+
+    fun finishLoadMore(hasMore: Boolean) {
+        this.hasMore = hasMore
+        this.isLoading = false
+        when {
+            hasMore && dataList.isEmpty() -> {
+                addLoadMoreEntity()
+            }
+            !hasMore && dataList.isNotEmpty() -> {
+                removeLoadMoreEntity()
+            }
+        }
+    }
+
+    private fun addLoadMoreEntity() {
+        removePendingRunnable()
+        addLoadMoreRunnable = Runnable {
             if (hasMore && dataList.isEmpty()) {
                 dataList.add(LoadMoreEntity)
                 notifyItemInserted(0)
             }
         }.also {
-            handler.postDelayed(it, delayTime)
+            recyclerView?.post(it)
+        }
+    }
+
+    private fun removeLoadMoreEntity() {
+        removePendingRunnable()
+        removeLoadMoreRunnable = Runnable {
+            if (!hasMore && dataList.isNotEmpty()) {
+                dataList.removeAt(0)
+                notifyItemRemoved(0)
+            }
+        }.also {
+            recyclerView?.post(it)
         }
     }
 
     private fun removePendingRunnable() {
-        notifyFinishLoadMore?.let {
-            handler.removeCallbacks(it)
-            notifyFinishLoadMore = null
+        addLoadMoreRunnable?.let {
+            recyclerView?.removeCallbacks(it)
+            addLoadMoreRunnable = null
         }
-    }
-
-    private fun doLoadMore() {
-        if (dataList.isNotEmpty() && !isLoading) {
-            //更新 loading 状态为 true
-            isLoading = true
-            onLoadMore?.invoke()
+        removeLoadMoreRunnable?.let {
+            recyclerView?.removeCallbacks(it)
+            removeLoadMoreRunnable = null
         }
     }
 
